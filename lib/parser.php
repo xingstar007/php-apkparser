@@ -1058,7 +1058,7 @@ class ARSCResTableConfig {
 
         $this->exceedingSize = $this->size - 36;
         if ($this->exceedingSize > 0) {
-            throw new \Exception("too much bytes !");
+            // throw new \Exception("too much bytes !");
             $this->padding = $buff->read($this->exceedingSize);
         }
     }
