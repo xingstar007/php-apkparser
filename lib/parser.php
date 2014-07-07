@@ -54,18 +54,16 @@ class APK {
         $this->axml[$m_n] = new AXMLPrinter($m_buff);
 
         try {
-            $this->xml[$m_n] = simplexml_load_string($this->axml[$m_n]->get_buff());
+            $this->xml[$m_n] = new \DOMDocument();
+            $this->xml[$m_n]->loadXML($this->axml[$m_n]->get_buff());
         } catch (\Exception $e) {
             $this->xml[$m_n] = NULL;
         }
 
         if (isset($this->xml[$m_n])) {
-            // We have to cast SimpleXML returns. Sad.
-            $this->package = (string)$this->xml[$m_n]->attributes()->package;
-
-            $m_androidns = $this->xml[$m_n]->attributes('android', true);
-            $this->androidversion["Code"] = (string)$m_androidns->versionCode;
-            $this->androidversion["Name"] = (string)$m_androidns->versionName;
+            $this->package = $this->xml[$m_n]->documentElement->getAttribute("package");
+            $this->androidversion["Code"] = $this->xml[$m_n]->documentElement->getAttribute("android:versionCode");
+            $this->androidversion["Name"] = $this->xml[$m_n]->documentElement->getAttribute("android:versionName");
 
             $this->valid_apk = True;
         }
@@ -95,16 +93,26 @@ class APK {
         return $this->zip->getStream($filepath);
     }
 
-    public function get_element($tag_name, $attribute, $ns = NULL) {
-        $m_node = $this->xml['AndroidManifest.xml']->{$tag_name}[0];
+    public function get_elements($tag_name, $attribute) {
+        $l = array();
 
-        #if (!$m_node) { return false; }
-
-        if ($ns) {
-            return (string)$m_node->attributes('android', true)->{$attribute};
+        foreach ($this->xml['AndroidManifest.xml']->getElementsByTagName($tag_name) as $item) {
+            $l[] = $item->getAttribute($attribute);
         }
 
-        return (string)$m_node->attributes()->{$attribute};
+        return $l;
+    }
+
+    public function get_element($tag_name, $attribute) {
+        foreach ($this->xml['AndroidManifest.xml']->getElementsByTagName($tag_name) as $item) {
+            $value = $item->getAttribute($attribute);
+
+            if (strlen($value) > 0) {
+                return $value;
+            }
+        }
+
+        return NULL;
     }
 
     public function get_permissions() {
@@ -116,15 +124,15 @@ class APK {
     }
 
     public function get_max_sdk_version() {
-        return (int)$this->get_element('uses-sdk', 'maxSdkVersion', true);
+        return (int)$this->get_element('uses-sdk', 'android:maxSdkVersion');
     }
 
     public function get_min_sdk_version() {
-        return (int)$this->get_element('uses-sdk', 'minSdkVersion', true);
+        return (int)$this->get_element('uses-sdk', 'android:minSdkVersion');
     }
 
     public function get_target_sdk_version() {
-        return (int)$this->get_element('uses-sdk', 'targetSdkVersion', true);
+        return (int)$this->get_element('uses-sdk', 'android:targetSdkVersion');
     }
 
     public function get_android_manifest_axml() {

@@ -34,7 +34,7 @@ printf("-min_sdk_version = '%s'\n", $apk->get_min_sdk_version());
 
 Manifest
 --------
-You may also get the `AndroidManifest.xml` SimpleXML object:
+You may also get the `AndroidManifest.xml` [**DOMDocument**](http://www.php.net/manual/en/class.domdocument.php) object:
 
 ```php
 $apk = new \APKParser\APK('example.apk');
@@ -46,14 +46,21 @@ printf("-object = '%s'", get_class($manifest));
 ...or perhaps you wish to get `AndroidManifest.xml` as a string (why?):
 
 ```php
-$manifest = $apk->get_android_manifest_axml()->get_buff();
+// First method.
+$manifest_i = $apk->get_android_manifest_axml()->get_buff();
+
+// Second method.
+$manifest_d = $apk->get_android_manifest_xml->saveXML();
 ```
 
 ...OR YOU WANT AN ELEMENT ATTRIBUTE VALUE:
 
 ```php
-$app_name = $apk->get_element('application', 'name', true);
+$app_name = $apk->get_element('application', 'android:name');
 printf("-application_name = '%s%s'", $apk->get_package(), $app_name);
+
+$activities = $apk->get_elements('activity', 'android:name');
+var_export($activities);
 ```
 
 Resources
@@ -83,7 +90,7 @@ printf("%s", $arscobj->get_resource_value_by_reference($vn_res_id));
 Reference values may be paths to files inside the package:
 
 ```php
-$app_icon = $apk->get_element('application', 'icon', true); // @<hex>
+$app_icon = $apk->get_element('application', 'android:icon'); // @<hex>
 
 $arscobj = $apk->get_android_resources();
 var_export($arscobj->get_resource_value_by_reference(substr($app_icon, 1)));
