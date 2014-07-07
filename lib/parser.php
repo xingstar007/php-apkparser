@@ -420,8 +420,7 @@ class AXMLParser {
                 $this->m_classAttribute = ($this->m_classAttribute & 0xFFFF) - 1;
 
                 for ($i = 0; $i < ($attributeCount * ATTRIBUTE_LENGHT); $i++) {
-                    $t = unpack('V', $this->buffer->read(4))[1];
-                    $this->m_attributes[] = $t;
+                    $this->m_attributes[] = unpack('V', $this->buffer->read(4))[1];
                 }
 
                 for ($i = ATTRIBUTE_IX_VALUE_TYPE; $i < count($this->m_attributes); $i += ATTRIBUTE_LENGHT) {
@@ -465,7 +464,7 @@ class AXMLParser {
             return '';
         }
 
-        return $this->m_uriprefix[$this->m_namespaceUri];
+        return $this->sb->getString($this->m_uriprefix[$this->m_namespaceUri]);
     }
 
     public function getName() {
@@ -489,7 +488,7 @@ class AXMLParser {
 
         foreach($this->m_uriprefix as $k => $v) {
             if (!in_array($k, $this->visited_ns)) {
-                $buff .= sprintf("xmlns:%s=\"%s\"",
+                $buff .= sprintf("xmlns:%s=\"%s\" ",
                     $this->sb->getString($v),
                     $this->sb->getString($this->m_prefixuri[$v]));
                 $this->visited_ns[] = $k;
@@ -604,10 +603,10 @@ class AXMLPrinter {
             if ($_type == START_DOCUMENT) {
                 $this->buff .= sprintf("%s\n", '<?xml version="1.0" encoding="utf-8"?>');
             } elseif ($_type == START_TAG) {
-                $this->buff .= '<' . $this->getPrefix($this->axml->getPrefix()) . $this->axml->getName() . "\n";
+                $this->buff .= '<' . $this->getPrefix($this->axml->getPrefix()) . $this->axml->getName() . " ";
 
                 for ($i = 0; $i < $this->axml->getAttributeCount(); $i++) {
-                    $this->buff .= sprintf("%s%s=\"%s\"\n",
+                    $this->buff .= sprintf("%s%s=\"%s\" ",
                         $this->getPrefix( $this->axml->getAttributePrefix($i) ),
                         $this->axml->getAttributeName($i),
                         htmlspecialchars($this->getAttributeValue( $i )));

@@ -58,13 +58,21 @@ printf("-application_name = '%s%s'", $apk->get_package(), $app_name);
 
 Resources
 ---------
-Some applications define their attribute values as references:
+Some applications define their manifest attribute values as references:
+
+```xml
+...
+<application android:icon="@drawable/mushrooms" android:label="Mushrooms"/>
+...
+```
+...which upon APK compilation are converted into reference IDs and now parsed by the parser
+into hex codes for convenience.
 
 ```php
 printf("%s", $apk->get_androidversion_name()); // prints '@<hex>', e.g.: '@7f0b000d'
 ```
 
-These references have to be decoded:
+These reference IDs have to be decoded:
 
 ```php
 $arscobj = $apk->get_android_resources();
@@ -72,7 +80,7 @@ $vn_res_id = substr($apk->get_androidversion_name(), 1);
 printf("%s", $arscobj->get_resource_value_by_reference($vn_res_id));
 ```
 
-References can point to files inside the package:
+Reference values may be paths to files inside the package:
 
 ```php
 $app_icon = $apk->get_element('application', 'icon', true); // @<hex>
