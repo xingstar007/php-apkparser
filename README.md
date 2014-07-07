@@ -8,6 +8,11 @@ It is possible that these may or may not be necessary, or perhaps require a smal
 * [PHP 5.3.0](http://php.net/releases/5_3_0.php)+ · the use of the 'const' keyword outside of classes
 
 
+Performance
+===========
+Horrible.
+
+
 Usage
 =====
 
@@ -18,7 +23,7 @@ To display some basic information about the package:
 ```php
 <?php
 
-require_once 'lib/APKParser/parser.php';
+require_once 'lib/parser.php';
 
 $apk = new \APKParser\APK('example.apk');
 
@@ -38,7 +43,7 @@ $manifest = $apk->get_android_manifest_xml();
 printf("-object = '%s'", get_class($manifest));
 ```
 
-...or perhaps you wish to get 'AndroidManifest.xml' as a string:
+...or perhaps you wish to get `AndroidManifest.xml` as a string (why?):
 
 ```php
 $manifest = $apk->get_android_manifest_axml()->get_buff();
@@ -54,6 +59,7 @@ printf("-application_name = '%s%s'", $apk->get_package(), $app_name);
 Resources
 ---------
 Some applications define their attribute values as references:
+
 ```php
 printf("%s", $apk->get_androidversion_name()); // prints '@<hex>', e.g.: '@7f0b000d'
 ```
@@ -91,6 +97,10 @@ $base64_string = base64_encode(stream_get_contents($icon_stream));
 
 printf("data:image/png;base64,%s", $base64_string);
 ```
+
+Developers decide whether attribute values will hold references or actual values,
+which means it is best to cover all cases for reliable results.
+
 
 Acknowledgements
 ================

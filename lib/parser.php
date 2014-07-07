@@ -98,7 +98,7 @@ class APK {
     public function get_element($tag_name, $attribute, $ns = NULL) {
         $m_node = $this->xml['AndroidManifest.xml']->{$tag_name}[0];
 
-        if (!$m_node) { return false; }
+        #if (!$m_node) { return false; }
 
         if ($ns) {
             return (string)$m_node->attributes('android', true)->{$attribute};
