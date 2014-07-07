@@ -30,6 +30,7 @@ $apk = new \APKParser\APK('example.apk');
 printf("-name = '%s'\n", $apk->get_package());
 printf("-version = '%s (%s)'\n", $apk->get_androidversion_name(), $apk->get_androidversion_code());
 printf("-min_sdk_version = '%s'\n", $apk->get_min_sdk_version());
+var_export($apk->get_permissions());
 ```
 
 Manifest

@@ -62,8 +62,12 @@ class APK {
 
         if (isset($this->xml[$m_n])) {
             $this->package = $this->xml[$m_n]->documentElement->getAttribute("package");
-            $this->androidversion["Code"] = $this->xml[$m_n]->documentElement->getAttribute("android:versionCode");
-            $this->androidversion["Name"] = $this->xml[$m_n]->documentElement->getAttribute("android:versionName");
+            $this->androidversion['Code'] = $this->xml[$m_n]->documentElement->getAttribute('android:versionCode');
+            $this->androidversion['Name'] = $this->xml[$m_n]->documentElement->getAttribute('android:versionName');
+
+            foreach ($this->xml[$m_n]->getElementsByTagName('uses-permission') as $item) {
+                $this->permissions[] = $item->getAttribute('android:name');
+            }
 
             $this->valid_apk = True;
         }
@@ -115,12 +119,60 @@ class APK {
         return NULL;
     }
 
+    public function get_activities() {
+        return $this->get_elements("activity", "android:name");
+    }
+
+    public function get_services() {
+        return $this->get_elements("service", "android:name");
+    }
+
+    public function get_receivers() {
+        return $this->get_elements("receiver", "android:name");
+    }
+
+    public function get_providers() {
+        return $this->get_elements("provider", "android:name");
+    }
+
     public function get_permissions() {
-        throw new \Exception("Ha!");
+        return $this->permissions;
     }
 
     public function get_details_permissions() {
-        throw new \Exception("!aH");
+        require_once 'platform.php';
+
+        $parsedGroups = array();
+        $parsedPermissions = array();
+
+        foreach ($this->permissions as $name) {
+            $perm = NULL;
+
+            if (!isset(PermissionList::$internal[$name])) {
+                // external permission
+                if (!isset(PermissionList::$external[$name])) {
+                    // unknown external permission
+                    $perm = array( 'group' => 'other.2EXTERNAL', 'level' => 4 );
+                } else {
+                    $perm = PermissionList::$external[$name];
+                }
+            } else {
+                $perm = PermissionList::$internal[$name];
+            }
+
+            if (!isset($parsedGroups[$perm['group']])) {
+                // add a group
+                $parsedGroups[$perm['group']] =
+                    PermissionList::$groups[$perm['group']];
+            }
+
+            $parsedPermissions[$name] = $perm;
+        }
+
+        return array(
+            'groups' => $parsedGroups,
+            'permissions' => $parsedPermissions
+        );
     }
 
     public function get_max_sdk_version() {
@@ -133,6 +185,12 @@ class APK {
 
     public function get_target_sdk_version() {
         return (int)$this->get_element('uses-sdk', 'android:targetSdkVersion');
+    }
+
+    public function get_human_sdk_version($level) {
+        require_once 'platform.php';
+
+        return 'Android ' . implode(', ', Platform::$levels[$level]);
     }
 
     public function get_android_manifest_axml() {
@@ -195,10 +253,12 @@ class StringBlock {
         if (($size % 4) != 0) { throw new \Exception("ooo"); }
 
         for ($i = 0; $i < $size; $i++) {
+            // Here we go again! Oh dear, this is horrible.
             $this->m_strings[] = unpack('c', $buff->read(1))[1];
         }
 
         if ($this->stylesOffset != 0) {
+            // Worse, we don't even use this.
             $size = $this->chunkSize - $this->stylesOffset;
 
             # FIXME
@@ -499,6 +559,7 @@ class AXMLParser {
                 $buff .= sprintf("xmlns:%s=\"%s\" ",
                     $this->sb->getString($v),
                     $this->sb->getString($this->m_prefixuri[$v]));
+
                 $this->visited_ns[] = $k;
             }
         }
@@ -626,6 +687,7 @@ class AXMLPrinter {
             } elseif ($_type == END_TAG) {
                 $this->buff .= sprintf( "</%s%s>\n", $this->getPrefix( $this->axml->getPrefix() ), $this->axml->getName() );
             } elseif ($_type == TEXT) {
+                // Mostly whitespace, tabs, or accidental characters; nothing useful.
                 #$this->buff .= sprintf("%s\n", htmlspecialchars($this->axml->getText()));
             } elseif ($_type == END_DOCUMENT) {
                 break;
@@ -687,6 +749,7 @@ class AXMLPrinter {
 
             return $_data;
         }
+
         return "<0x" . $_data . ", type 0x" . $_type . ">";
     }
 
