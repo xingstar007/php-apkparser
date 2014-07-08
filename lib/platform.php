@@ -369,7 +369,7 @@ class PermissionList {
 
             "level" => 1,
             "label" => "read your Web bookmarks and history",
-            "description" => "Allows the app to read the history of all URLs that the Browser has visited, and all of the Browsers bookmarks. Note: this permission may not be enforced by third-party browsers or other  applications with web browsing capabilities.",
+            "description" => "Allows the app to read the history of all URLs that the Browser has visited, and all of the Browsers bookmarks. Note: this permission may not be enforced by third-party browsers or other applications with web browsing capabilities.",
         ),
         "com.android.browser.permission.WRITE_HISTORY_BOOKMARKS" => array(
             "group" => "android.permission-group.BOOKMARKS",

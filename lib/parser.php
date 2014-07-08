@@ -140,6 +140,10 @@ class APK {
     }
 
     public function get_details_permissions() {
+        if (count($this->permissions) < 1) {
+            return false;
+        }
+
         require_once 'platform.php';
 
         $parsedGroups = array();
@@ -188,6 +192,10 @@ class APK {
     }
 
     public function get_human_sdk_version($level) {
+        if (!$level) {
+            return false;
+        }
+
         require_once 'platform.php';
 
         return 'Android ' . implode(', ', Platform::$levels[$level]);
@@ -206,7 +214,12 @@ class APK {
             return $this->arsc['resources.arsc'];
         }
 
-        $this->arsc['resources.arsc'] = new ARSCParser($this->get_file('resources.arsc'));
+        try {
+            $this->arsc['resources.arsc'] = new ARSCParser($this->get_file('resources.arsc'));
+        } catch (\InvalidArgumentException $e) {
+            $this->arsc['resources.arsc'] = false;
+        }
+
         return $this->arsc['resources.arsc'];
     }
 }

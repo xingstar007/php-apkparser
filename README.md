@@ -6,7 +6,7 @@ Requirements
 ============
 It is possible that these may or may not be necessary, or perhaps require a small modification to work.
 * [PHP 5.3.0](http://php.net/releases/5_3_0.php)+ · the use of the 'const' keyword outside of classes
-
+* [iconv](http://lu1.php.net/manual/en/function.iconv.php) · Android packages deal with many languages, and use UTF-16 when applicable
 
 Performance
 ===========
@@ -73,14 +73,14 @@ Some applications define their manifest attribute values as references:
 <application android:icon="@drawable/mushrooms" android:label="Mushrooms"/>
 ...
 ```
-...which upon APK compilation are converted into reference IDs and now parsed by the parser
+...which upon APK compilation are converted into resource IDs and now parsed by the parser
 into hex codes for convenience.
 
 ```php
 printf("%s", $apk->get_androidversion_name()); // prints '@<hex>', e.g.: '@7f0b000d'
 ```
 
-These reference IDs have to be decoded:
+These resource IDs have to be decoded:
 
 ```php
 $arscobj = $apk->get_android_resources();
@@ -88,7 +88,7 @@ $vn_res_id = substr($apk->get_androidversion_name(), 1);
 printf("%s", $arscobj->get_resource_value_by_reference($vn_res_id));
 ```
 
-Reference values may be paths to files inside the package:
+Resource values may be paths to files inside the package:
 
 ```php
 $app_icon = $apk->get_element('application', 'android:icon'); // @<hex>
