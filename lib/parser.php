@@ -777,7 +777,6 @@ const RES_TABLE_TYPE_SPEC_TYPE    = 0x0202;
 
 class ARSCParser {
     public function __construct($raw_buff) {
-        $this->analyzed = False;
         $this->buff = new \BuffaloHandle($raw_buff);
 
         $this->header = new ARSCHeader($this->buff);
@@ -851,60 +850,6 @@ class ARSCParser {
         }
     }
 
-    private function _analyse() {
-        if ($this->analyzed) {
-            return;
-        }
-
-        $this->analyzed = True;
-
-        foreach ($this->packages as $package_name=>$value) {
-            $this->values[$package_name] = array();
-            $t = 0;
-
-            for ($i = 3; $i < count($value); $i++) {
-                $header = $value[$i];
-
-                if ($header instanceof ARSCHeader) {
-                    if ($header->type == RES_TABLE_TYPE_TYPE) {
-                        $a_res_type = $value[$i + 1];
-
-                        if (!isset($this->values[$package_name][$a_res_type->config->get_language()])) {
-                            $this->values[$package_name][$a_res_type->config->get_language()] = array( 'public' => array() );
-                        }
-
-                        $c_value = &$this->values[$package_name][$a_res_type->config->get_language()];
-                        $entries = $value[$i + 2];
-                        $nb_i = 0;
-                        while (list(, $array) = each($entries)) {
-                            list($entry, $res_id) = $array;
-
-                            if ($entry != -1) {
-                                $ate = $value[$i + 3 + $nb_i];
-
-                                if ($ate->get_index() != -1) {
-                                    $c_value["public"][] = array($a_res_type->get_type(), $ate->get_value(), $ate->mResId);
-                                }
-
-                                if (!isset($c_value[$a_res_type->get_type()])) {
-                                    $c_value[$a_res_type->get_type()] = array();
-                                }
-
-                                if ($a_res_type->get_type() == "string") {
-                                    $c_value["string"][] = $this->get_resource_string($ate);
-                                }
-
-                                $nb_i++;
-                            }
-                        }
-
-                        $i++;
-                    }
-                }
-            }
-        }
-    }
-
     public function get_resource_value_by_reference($id) {
         $data = array();
 
@@ -923,16 +868,8 @@ class ARSCParser {
         return $data;
     }
 
-    public function get_resource_string($ate) {
-        return array($ate->get_value(), $ate->get_key_data());
-    }
-
     public function get_packages_names() {
         return array_keys($this->packages);
-    }
-
-    public function get_locales($package_name) {
-        $this->_analyse();
     }
 }
 
