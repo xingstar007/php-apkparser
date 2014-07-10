@@ -50,8 +50,7 @@ class APK {
         }
 
         $m_n = 'AndroidManifest.xml';
-        $m_buff = $this->zip->getStream($m_n);
-        $this->axml[$m_n] = new AXMLPrinter($m_buff);
+        $this->axml[$m_n] = new AXMLPrinter($this->zip->getStream($m_n));
 
         try {
             $this->xml[$m_n] = new \DOMDocument();
@@ -214,10 +213,12 @@ class APK {
             return $this->arsc['resources.arsc'];
         }
 
-        try {
-            $this->arsc['resources.arsc'] = new ARSCParser($this->get_file('resources.arsc'));
-        } catch (\InvalidArgumentException $e) {
+        $stream = $this->get_file('resources.arsc');
+
+        if (!$stream) {
             $this->arsc['resources.arsc'] = false;
+        } else {
+            $this->arsc['resources.arsc'] = new ARSCParser($stream);
         }
 
         return $this->arsc['resources.arsc'];
@@ -228,9 +229,14 @@ const UTF8_FLAG = 0x00000100;
 
 
 class StringBlock {
+    private $_cache = array();
+
+    private $m_stringOffsets = array();
+    private $m_strings = array();
+
     public function __construct(\BuffaloHandle $buff) {
+        $this->buff = $buff;
         $this->start = $buff->position();
-        $this->_cache = array();
         $this->header = unpack('s', $buff->read(2))[1];
         $this->header_size = unpack('s', $buff->read(2))[1];
 
@@ -243,44 +249,10 @@ class StringBlock {
 
         $this->stringsOffset = unpack('i', $buff->read(4))[1];
         $this->stylesOffset = unpack('i', $buff->read(4))[1];
+        $this->stringOffsetsOffset = $buff->position();
 
-        $this->m_stringOffsets = array();
-        $this->m_styleOffsets = array();
-        $this->m_strings = array();
-        $this->m_styles = array();
-
-        for ($i = 0; $i < $this->stringCount; $i++) {
-            $this->m_stringOffsets[] = unpack('i', $buff->read(4))[1];
-        }
-
-        for ($i = 0; $i < $this->styleOffsetCount; $i++) {
-            $this->m_styleOffsets[] = unpack('i', $buff->read(4))[1];
-        }
-
-        $size = $this->chunkSize - $this->stringsOffset;
-        if ($this->stylesOffset != 0) {
-            $size = $this->stylesOffset - $this->stringsOffset;
-        }
-
-        # FIXME
-        if (($size % 4) != 0) { throw new \Exception("ooo"); }
-
-        for ($i = 0; $i < $size; $i++) {
-            // Here we go again! Oh dear, this is horrible.
-            $this->m_strings[] = unpack('c', $buff->read(1))[1];
-        }
-
-        if ($this->stylesOffset != 0) {
-            // Worse, we don't even use this.
-            $size = $this->chunkSize - $this->stylesOffset;
-
-            # FIXME
-            if (($size % 4) != 0) { throw new \Exception("ooo"); }
-
-            for ($i = 0; $i < ($size / 4); $i++) {
-                $this->m_styles[] = unpack('i', $buff->read(4))[1];
-            }
-        }
+        // We're operating on a global buffer, goto end of the chunk.
+        $buff->seek($this->start + $this->chunkSize);
     }
 
     public function getString($idx) {
@@ -288,54 +260,58 @@ class StringBlock {
             return $this->_cache[$idx];
         }
 
-        if ($idx < 0 or !$this->m_stringOffsets or $idx >= count($this->m_stringOffsets)) {
+        if ($idx < 0 or $idx >= $this->stringCount) {
             return "";
         }
 
-        $offset = $this->m_stringOffsets[$idx];
+        // Remember where we were in the stream.
+        $position = $this->buff->position();
+
+        // Seek to the block where string offsets are found.
+        $this->buff->seek($this->stringOffsetsOffset + (4 * $idx));
+        $m_offset = unpack('i', $this->buff->read(4))[1];
+
+        // Now seek to the string position.
+        $this->buff->seek(($this->start + $this->stringsOffset) + $m_offset);
 
         if (!$this->m_isUTF8) {
-            $length = $this->getShort2($this->m_strings, $offset);
-            $offset += 2;
-            $this->_cache[$idx] = $this->decode($this->m_strings, $offset, $length);
+            // Catch the first two character codes;
+            // it advances our position in the stream for 2 bytes.
+            $length = $this->getShort2(
+                unpack('c', $this->buff->read(1))[1],
+                unpack('c', $this->buff->read(1))[1]);
+
+            $this->_cache[$idx] = $this->decodeUTF16($length);
         } else {
-            $offset += $this->getVarint($this->m_strings, $offset)[1];
-            $varint = $this->getVarint($this->m_strings, $offset);
+            // A wee bit more complicated.
+            $m_offset += $this->getVarint()[1];
+            $m_varint = $this->getVarint();
+            $m_length = $m_varint[0];
 
-            $offset += $varint[1];
-            $length = $varint[0];
-
-            $this->_cache[$idx] = $this->decode2($this->m_strings, $offset, $length);
+            $this->_cache[$idx] = $this->decodeUTF8($m_length);
         }
 
+        // Return to the last position in the stream.
+        $this->buff->seek($position);
         return $this->_cache[$idx];
     }
 
-    private function decode($array, $offset, $length) {
+    private function decodeUTF16($length) {
         $length = $length * 2;
         $length = $length + $length % 2;
 
-        $data = "";
-
-        for ($i = 0; $i < $length; $i++) {
-            $data .= pack("C*", $this->m_strings[$offset + $i]);
-        }
+        $data = $this->buff->read($length);
 
         return iconv('utf-16', 'utf-8', $data);
     }
 
-    private function decode2($array, $offset, $length) {
-        $data = "";
-
-        for ($i = 0; $i < $length; $i++) {
-            $data .= pack("C*", $this->m_strings[$offset + $i]);
-        }
-
-        return $data;#iconv('utf-8', 'ASCII', $data);
+    private function decodeUTF8($length) {
+        return $this->buff->read($length);
     }
 
-    private function getVarint($array, $offset) {
-        $val = $array[$offset];
+    private function getVarint() {
+        // This is silly.
+        $val = unpack('c', $this->buff->read(1))[1];
         $more = ($val & 0x80) != 0;
         $val &= 0x7f;
 
@@ -343,11 +319,11 @@ class StringBlock {
             return array($val, 1);
         }
 
-        return array($val << 8 | $array[$offset + 1] & 0xff, 2);
+        return array($val << 8 | unpack('c', $this->buff->read(1))[1] & 0xff, 2);
     }
 
-    private function getShort2($array, $offset) {
-        return ($array[$offset + 1] & 0xff) << 8 | $array[$offset] & 0xff;
+    private function getShort2($alpha, $omega) {
+        return ($omega & 0xff) << 8 | $alpha & 0xff;
     }
 }
 
@@ -709,7 +685,7 @@ class AXMLPrinter {
     }
 
     public function get_buff() {
-        return $this->buff; #.encode('utf-8')?
+        return $this->buff;
     }
 
     private function getPrefix($prefix) {
