@@ -46,11 +46,16 @@ class APK {
         $result = $this->zip->open($filepath);
 
         if ($result !== True) {
-            throw new \Exception('Cannot open "' . $filepath . '"');
+            return;
         }
 
         $m_n = 'AndroidManifest.xml';
-        $this->axml[$m_n] = new AXMLPrinter($this->zip->getStream($m_n));
+        $m_buff = $this->zip->getStream($m_n);
+        if ($m_buff === False) {
+            return;
+        }
+
+        $this->axml[$m_n] = new AXMLPrinter($m_buff);
 
         try {
             $this->xml[$m_n] = new \DOMDocument();
