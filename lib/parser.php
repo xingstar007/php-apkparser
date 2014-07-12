@@ -280,8 +280,10 @@ class StringBlock {
         $this->buff->seek(($this->start + $this->stringsOffset) + $m_offset);
 
         if (!$this->m_isUTF8) {
-            // Catch the first two character codes;
-            // it advances our position in the stream for 2 bytes.
+            /*
+             * Catch the first two character codes;
+             * it advances our position in the stream for 2 bytes.
+             */
             $length = $this->getShort2(
                 unpack('c', $this->buff->read(1))[1],
                 unpack('c', $this->buff->read(1))[1]);
