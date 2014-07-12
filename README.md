@@ -1,12 +1,12 @@
 # php-apkparser
-A small library for parsing Android application package files (APKs).
+A small library for parsing Android application package files (__APK__ s).
 
 
 Requirements
 ============
 It is possible that these may or may not be necessary, or perhaps require a small modification to work.
-* [PHP 5.3.0](http://php.net/releases/5_3_0.php)+ · the use of the 'const' keyword outside of classes
-* [iconv](http://lu1.php.net/manual/en/function.iconv.php) · Android packages deal with many languages, and use UTF-16 when applicable
+* [**PHP 5.3.0**](http://php.net/releases/5_3_0.php)+ · the use of the 'const' keyword outside of classes
+* [**iconv**](http://lu1.php.net/manual/en/function.iconv.php) · Android packages deal with many languages, and use UTF-16 when applicable
 
 Performance
 ===========
@@ -74,7 +74,7 @@ Some applications define their manifest attribute values as references:
 ...
 ```
 ...which upon APK compilation are converted into resource IDs and now parsed by the parser
-into hex codes for convenience.
+into **hex** codes for convenience.
 
 ```php
 printf("%s", $apk->get_androidversion_name()); // prints '@<hex>', e.g.: '@7f0b000d'
@@ -120,4 +120,4 @@ which means it is best to cover all cases for reliable results.
 
 Acknowledgements
 ================
-* the [Androguard](https://code.google.com/p/androguard/) project from which parts of the code was ported from
+* the [**Androguard**](https://code.google.com/p/androguard/) project from which parts of the code was ported from
