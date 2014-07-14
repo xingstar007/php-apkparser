@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="php-apkparser : A library." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>php-apkparser</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/NormalRa/php-apkparser">View on GitHub</a>
+
+          <h1 id="project_title">php-apkparser</h1>
+          <h2 id="project_tagline">A library.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/NormalRa/php-apkparser/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/NormalRa/php-apkparser/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="php-apkparser" class="anchor" href="#php-apkparser"><span class="octicon octicon-link"></span></a>php-apkparser</h1>
+
+<p>A small library for parsing Android application package files (<strong>APK</strong> s).</p>
+
+<h1>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h1>
+
+<p>It is possible that these may or may not be necessary, or perhaps require a small modification to work.</p>
+
+<ul>
+<li>
+<a href="http://php.net/releases/5_3_0.php"><strong>PHP 5.3.0</strong></a>+ · the use of the 'const' keyword outside of classes</li>
+<li>
+<a href="http://lu1.php.net/manual/en/function.iconv.php"><strong>iconv</strong></a> · Android packages deal with many languages, and use UTF-16 when applicable</li>
+</ul><h1>
+<a name="performance" class="anchor" href="#performance"><span class="octicon octicon-link"></span></a>Performance</h1>
+
+<p>Horrible.</p>
+
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
+
+<h2>
+<a name="simple" class="anchor" href="#simple"><span class="octicon octicon-link"></span></a>Simple</h2>
+
+<p>To display some basic information about the package:</p>
+
+<div class="highlight highlight-php"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="k">require_once</span> <span class="s1">'lib/parser.php'</span><span class="p">;</span>
+
+<span class="nv">$apk</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\APKParser\APK</span><span class="p">(</span><span class="s1">'example.apk'</span><span class="p">);</span>
+
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"-name = '%s'</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_package</span><span class="p">());</span>
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"-version = '%s (%s)'</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_androidversion_name</span><span class="p">(),</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_androidversion_code</span><span class="p">());</span>
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"-min_sdk_version = '%s'</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_min_sdk_version</span><span class="p">());</span>
+<span class="nb">var_export</span><span class="p">(</span><span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_permissions</span><span class="p">());</span>
+</pre></div>
+
+<h2>
+<a name="manifest" class="anchor" href="#manifest"><span class="octicon octicon-link"></span></a>Manifest</h2>
+
+<p>You may also get the <code>AndroidManifest.xml</code> <a href="http://www.php.net/manual/en/class.domdocument.php"><strong>DOMDocument</strong></a> object:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$apk</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\APKParser\APK</span><span class="p">(</span><span class="s1">'example.apk'</span><span class="p">);</span>
+<span class="nv">$manifest</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_android_manifest_xml</span><span class="p">();</span>
+
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"-object = '%s'"</span><span class="p">,</span> <span class="nb">get_class</span><span class="p">(</span><span class="nv">$manifest</span><span class="p">));</span>
+</pre></div>
+
+<p>...or perhaps you wish to get <code>AndroidManifest.xml</code> as a string (why?):</p>
+
+<div class="highlight highlight-php"><pre><span class="c1">// First method.</span>
+<span class="nv">$manifest_i</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_android_manifest_axml</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get_buff</span><span class="p">();</span>
+
+<span class="c1">// Second method.</span>
+<span class="nv">$manifest_d</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_android_manifest_xml</span><span class="o">-&gt;</span><span class="na">saveXML</span><span class="p">();</span>
+</pre></div>
+
+<p>...OR YOU WANT AN ELEMENT ATTRIBUTE VALUE:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$app_name</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_element</span><span class="p">(</span><span class="s1">'application'</span><span class="p">,</span> <span class="s1">'android:name'</span><span class="p">);</span>
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"-application_name = '%s%s'"</span><span class="p">,</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_package</span><span class="p">(),</span> <span class="nv">$app_name</span><span class="p">);</span>
+
+<span class="nv">$activities</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_elements</span><span class="p">(</span><span class="s1">'activity'</span><span class="p">,</span> <span class="s1">'android:name'</span><span class="p">);</span>
+<span class="nb">var_export</span><span class="p">(</span><span class="nv">$activities</span><span class="p">);</span>
+</pre></div>
+
+<h2>
+<a name="resources" class="anchor" href="#resources"><span class="octicon octicon-link"></span></a>Resources</h2>
+
+<p>Some applications define their manifest attribute values as references:</p>
+
+<div class="highlight highlight-xml"><pre>...
+<span class="nt">&lt;application</span> <span class="na">android:icon=</span><span class="s">"@drawable/mushrooms"</span> <span class="na">android:label=</span><span class="s">"Mushrooms"</span><span class="nt">/&gt;</span>
+...
+</pre></div>
+
+<p>...which upon APK compilation are converted into resource IDs and now parsed by the parser
+into <strong>hex</strong> codes for convenience.</p>
+
+<div class="highlight highlight-php"><pre><span class="nb">printf</span><span class="p">(</span><span class="s2">"%s"</span><span class="p">,</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_androidversion_name</span><span class="p">());</span> <span class="c1">// prints '@&lt;hex&gt;', e.g.: '@7f0b000d'</span>
+</pre></div>
+
+<p>These resource IDs have to be decoded:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$arscobj</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_android_resources</span><span class="p">();</span>
+<span class="nv">$vn_res_id</span> <span class="o">=</span> <span class="nb">substr</span><span class="p">(</span><span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_androidversion_name</span><span class="p">(),</span> <span class="mi">1</span><span class="p">);</span>
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"%s"</span><span class="p">,</span> <span class="nv">$arscobj</span><span class="o">-&gt;</span><span class="na">get_resource_value_by_reference</span><span class="p">(</span><span class="nv">$vn_res_id</span><span class="p">));</span>
+</pre></div>
+
+<p>Resource values may be paths to files inside the package:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$app_icon</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_element</span><span class="p">(</span><span class="s1">'application'</span><span class="p">,</span> <span class="s1">'android:icon'</span><span class="p">);</span> <span class="c1">// @&lt;hex&gt;</span>
+
+<span class="nv">$arscobj</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_android_resources</span><span class="p">();</span>
+<span class="nb">var_export</span><span class="p">(</span><span class="nv">$arscobj</span><span class="o">-&gt;</span><span class="na">get_resource_value_by_reference</span><span class="p">(</span><span class="nb">substr</span><span class="p">(</span><span class="nv">$app_icon</span><span class="p">,</span> <span class="mi">1</span><span class="p">)));</span>
+<span class="cm">/*</span>
+<span class="cm">array (</span>
+<span class="cm">  0 =&gt; 'res/drawable-mdpi/mushrooms.png',</span>
+<span class="cm">  1 =&gt; 'res/drawable-hdpi/mushrooms.png',</span>
+<span class="cm">  2 =&gt; 'res/drawable-xhdpi/mushrooms.png',</span>
+<span class="cm">)</span>
+<span class="cm"> */</span>
+</pre></div>
+
+<p>...which you can get as a stream from the package (and then use as you wish):</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$icon</span> <span class="o">=</span> <span class="nv">$arscobj</span><span class="o">-&gt;</span><span class="na">get_resource_value_by_reference</span><span class="p">(</span><span class="nb">substr</span><span class="p">(</span><span class="nv">$app_icon</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">];</span>
+<span class="nv">$icon_stream</span> <span class="o">=</span> <span class="nv">$apk</span><span class="o">-&gt;</span><span class="na">get_file</span><span class="p">(</span><span class="nv">$icon</span><span class="p">);</span>
+<span class="nv">$base64_string</span> <span class="o">=</span> <span class="nb">base64_encode</span><span class="p">(</span><span class="nb">stream_get_contents</span><span class="p">(</span><span class="nv">$icon_stream</span><span class="p">));</span>
+
+<span class="nb">printf</span><span class="p">(</span><span class="s2">"data:image/png;base64,%s"</span><span class="p">,</span> <span class="nv">$base64_string</span><span class="p">);</span>
+</pre></div>
+
+<p>Developers decide whether attribute values will hold references or actual values,
+which means it is best to cover all cases for reliable results.</p>
+
+<h1>
+<a name="acknowledgements" class="anchor" href="#acknowledgements"><span class="octicon octicon-link"></span></a>Acknowledgements</h1>
+
+<ul>
+<li>the <a href="https://code.google.com/p/androguard/"><strong>Androguard</strong></a> project from which parts of the code was ported from</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">php-apkparser maintained by <a href="https://github.com/NormalRa">NormalRa</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
