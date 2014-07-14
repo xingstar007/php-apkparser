@@ -137,6 +137,10 @@ header ul a {
   height:40px;
 }
 
+a > strong {
+  color:#3399cc;
+}
+
 strong {
   color:#222;
   font-weight:700;
