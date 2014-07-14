@@ -51,7 +51,7 @@ printf("-object = '%s'", get_class($manifest));
 $manifest_i = $apk->get_android_manifest_axml()->get_buff();
 
 // Second method.
-$manifest_d = $apk->get_android_manifest_xml->saveXML();
+$manifest_d = $apk->get_android_manifest_xml()->saveXML();
 ```
 
 ...OR YOU WANT AN ELEMENT ATTRIBUTE VALUE:
