@@ -6,7 +6,7 @@ Requirements
 ============
 It is possible that these may or may not be necessary, or perhaps require a small modification to work.
 * [**PHP 5.3.0**](http://php.net/releases/5_3_0.php)+ · the use of the 'const' keyword outside of classes
-* [**iconv**](http://lu1.php.net/manual/en/function.iconv.php) · Android packages deal with many languages, and use UTF-16 when applicable
+* [**iconv**](http://php.net/manual/en/function.iconv.php) · Android packages deal with many languages, and use UTF-16 when applicable
 
 Performance
 ===========
