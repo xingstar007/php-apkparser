@@ -27,9 +27,9 @@ require_once 'lib/parser.php';
 
 $apk = new \APKParser\APK('example.apk');
 
-printf("-name = '%s'\n", $apk->get_package());
-printf("-version = '%s (%s)'\n", $apk->get_androidversion_name(), $apk->get_androidversion_code());
-printf("-min_sdk_version = '%s'\n", $apk->get_min_sdk_version());
+printf("-name = '%s'\n",              $apk->get_package());
+printf("-version = '%s (%s)'\n",      $apk->get_androidversion_name(),  $apk->get_androidversion_code());
+printf("-min_sdk_version = '%s'\n",   $apk->get_min_sdk_version());
 var_export($apk->get_permissions());
 ```
 
@@ -38,7 +38,7 @@ Manifest
 You may also get the `AndroidManifest.xml` [**DOMDocument**](http://www.php.net/manual/en/class.domdocument.php) object:
 
 ```php
-$apk = new \APKParser\APK('example.apk');
+$apk      = new \APKParser\APK('example.apk');
 $manifest = $apk->get_android_manifest_xml();
 
 printf("-object = '%s'", get_class($manifest));
@@ -83,7 +83,7 @@ printf("%s", $apk->get_androidversion_name()); // prints '@<hex>', e.g.: '@7f0b0
 These resource IDs have to be decoded:
 
 ```php
-$arscobj = $apk->get_android_resources();
+$arscobj   = $apk->get_android_resources();
 $vn_res_id = substr($apk->get_androidversion_name(), 1);
 printf("%s", $arscobj->get_resource_value_by_reference($vn_res_id));
 ```
@@ -107,8 +107,8 @@ array (
 ...which you can get as a stream from the package (and then use as you wish):
 
 ```php
-$icon = $arscobj->get_resource_value_by_reference(substr($app_icon, 1))[0];
-$icon_stream = $apk->get_file($icon);
+$icon          = $arscobj->get_resource_value_by_reference(substr($app_icon, 1))[0];
+$icon_stream   = $apk->get_file($icon);
 $base64_string = base64_encode(stream_get_contents($icon_stream));
 
 printf("data:image/png;base64,%s", $base64_string);
