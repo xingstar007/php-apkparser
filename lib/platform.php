@@ -3,51 +3,51 @@ namespace APKParser;
 
 # @link: http://developer.android.com/reference/android/os/Build.VERSION_CODES.html
 # @link: http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels
-const ANDROID_API_BASE     = 1;
-const ANDROID_API_BASE_1_1 = 2;
-const ANDROID_API_CUPCAKE = 3;
-const ANDROID_API_DONUT = 4;
-const ANDROID_API_ECLAIR     = 5;
-const ANDROID_API_ECLAIR_0_1 = 6;
-const ANDROID_API_ECLAIR_MR1 = 7;
-const ANDROID_API_FROYO = 8;
-const ANDROID_API_GINGERBREAD     = 9;
-const ANDROID_API_GINGERBREAD_MR1 = 10;
-const ANDROID_API_HONEYCOMB     = 11;
-const ANDROID_API_HONEYCOMB_MR1 = 12;
-const ANDROID_API_HONEYCOMB_MR2 = 13;
+const ANDROID_API_BASE                   = 1;
+const ANDROID_API_BASE_1_1               = 2;
+const ANDROID_API_CUPCAKE                = 3;
+const ANDROID_API_DONUT                  = 4;
+const ANDROID_API_ECLAIR                 = 5;
+const ANDROID_API_ECLAIR_0_1             = 6;
+const ANDROID_API_ECLAIR_MR1             = 7;
+const ANDROID_API_FROYO                  = 8;
+const ANDROID_API_GINGERBREAD            = 9;
+const ANDROID_API_GINGERBREAD_MR1        = 10;
+const ANDROID_API_HONEYCOMB              = 11;
+const ANDROID_API_HONEYCOMB_MR1          = 12;
+const ANDROID_API_HONEYCOMB_MR2          = 13;
 const ANDROID_API_ICE_CREAM_SANDWICH     = 14;
 const ANDROID_API_ICE_CREAM_SANDWICH_MR1 = 15;
-const ANDROID_API_ICE_JELLY_BEAN     = 16;
-const ANDROID_API_ICE_JELLY_BEAN_MR1 = 17;
-const ANDROID_API_ICE_JELLY_BEAN_MR2 = 18;
-const ANDROID_API_KITKAT = 19;
-const ANDROID_API_KITKAT_WATCH = 20;
+const ANDROID_API_ICE_JELLY_BEAN         = 16;
+const ANDROID_API_ICE_JELLY_BEAN_MR1     = 17;
+const ANDROID_API_ICE_JELLY_BEAN_MR2     = 18;
+const ANDROID_API_KITKAT                 = 19;
+const ANDROID_API_KITKAT_WATCH           = 20;
 
 
 class Platform {
     public static $levels = array(
         0 => array("<placeholder>"),
-        ANDROID_API_BASE     => array("1.0"),
-        ANDROID_API_BASE_1_1 => array("1.1"),
-        ANDROID_API_CUPCAKE => array("1.5"),
-        ANDROID_API_DONUT => array("1.6"),
-        ANDROID_API_ECLAIR     => array("2.0"),
-        ANDROID_API_ECLAIR_0_1 => array("2.0.1"),
-        ANDROID_API_ECLAIR_MR1 => array("2.1.x"),
-        ANDROID_API_FROYO => array("2.2.x"),
-        ANDROID_API_GINGERBREAD     => array("2.3", "2.3.1", "2.3.2"),
-        ANDROID_API_GINGERBREAD_MR1 => array("2.3.3", "2.3.4"),
-        ANDROID_API_HONEYCOMB     => array("3.0.x"),
-        ANDROID_API_HONEYCOMB_MR1 => array("3.1.x"),
-        ANDROID_API_HONEYCOMB_MR2 => array("3.2"),
+        ANDROID_API_BASE                   => array("1.0"),
+        ANDROID_API_BASE_1_1               => array("1.1"),
+        ANDROID_API_CUPCAKE                => array("1.5"),
+        ANDROID_API_DONUT                  => array("1.6"),
+        ANDROID_API_ECLAIR                 => array("2.0"),
+        ANDROID_API_ECLAIR_0_1             => array("2.0.1"),
+        ANDROID_API_ECLAIR_MR1             => array("2.1.x"),
+        ANDROID_API_FROYO                  => array("2.2.x"),
+        ANDROID_API_GINGERBREAD            => array("2.3", "2.3.1", "2.3.2"),
+        ANDROID_API_GINGERBREAD_MR1        => array("2.3.3", "2.3.4"),
+        ANDROID_API_HONEYCOMB              => array("3.0.x"),
+        ANDROID_API_HONEYCOMB_MR1          => array("3.1.x"),
+        ANDROID_API_HONEYCOMB_MR2          => array("3.2"),
         ANDROID_API_ICE_CREAM_SANDWICH     => array("4.0", "4.0.1", "4.0.2"),
         ANDROID_API_ICE_CREAM_SANDWICH_MR1 => array("4.0.3", "4.0.4"),
-        ANDROID_API_ICE_JELLY_BEAN     => array("4.1", "4.1.1"),
-        ANDROID_API_ICE_JELLY_BEAN_MR1 => array("4.2", "4.2.2"),
-        ANDROID_API_ICE_JELLY_BEAN_MR2 => array("4.3"),
-        ANDROID_API_KITKAT => array("4.4"),
-        ANDROID_API_KITKAT_WATCH => array("4.4W"),
+        ANDROID_API_ICE_JELLY_BEAN         => array("4.1", "4.1.1"),
+        ANDROID_API_ICE_JELLY_BEAN_MR1     => array("4.2", "4.2.2"),
+        ANDROID_API_ICE_JELLY_BEAN_MR2     => array("4.3"),
+        ANDROID_API_KITKAT                 => array("4.4"),
+        ANDROID_API_KITKAT_WATCH           => array("4.4W"),
     );
 }
 
