@@ -207,6 +207,7 @@ class PermissionList {
             "group" => "android.permission-group.MESSAGES",
 
             "level" => 1,
+            "money" => true,
             "label" => "send SMS messages",
             "description" => "Allows the app to send SMS messages. This may result in unexpected charges. Malicious apps may cost you money by sending messages without your confirmation.",
         ),
@@ -704,6 +705,7 @@ class PermissionList {
             "group" => "android.permission-group.PHONE_CALLS",
 
             "level" => 1,
+            "money" => true,
             "label" => "directly call phone numbers",
             "description" => "Allows the app to call phone numbers without your intervention. This may result in unexpected charges or calls. Note that this doesnt allow the app to call emergency numbers. Malicious apps may cost you money by making calls without your confirmation.",
         ),
