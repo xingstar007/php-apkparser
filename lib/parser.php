@@ -160,7 +160,7 @@ class APK {
                 // external permission
                 if (!isset(PermissionList::$external[$name])) {
                     // unknown external permission
-                    $perm = array( 'group' => 'other.2EXTERNAL', 'level' => 4 );
+                    $perm = array( 'group' => 0, 'label' => false, 'description' => false);
                 } else {
                     $perm = PermissionList::$external[$name];
                 }
